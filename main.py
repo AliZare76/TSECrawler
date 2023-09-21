@@ -33,15 +33,15 @@ end_date = '2023-09-20'
 dates = pd.date_range(start=start_date, end=end_date).strftime("%Y%m%d")
 
 # Connect to PostgreSQL database
-# conn = psycopg2.connect(
-#     host="your_host",
-#     database="your_database",
-#     user="your_user",
-#     password="your_password"
-# )
+conn = psycopg2.connect(
+    host="your_host",
+    database="your_database",
+    user="your_user",
+    password="your_password"
+)
 
-# # Create a cursor object
-# cursor = conn.cursor()
+# Create a cursor object
+cursor = conn.cursor()
 
 # Iterate over symbol IDs
 for symbol_id in symbol_ids:
@@ -63,31 +63,31 @@ for symbol_id in symbol_ids:
     combined_df = pd.concat(df_list, ignore_index=True)
     print(combined_df)
     # Create the shareHolders table in the database if it doesn't exist
-#     create_table_query = '''
-#         CREATE TABLE IF NOT EXISTS shareHolders (
-#             id SERIAL PRIMARY KEY,
-#             shareholderName TEXT,
-#             numShares INT,
-#             percentShares FLOAT,
-#             date DATE,
-#             symbolId TEXT
-#         )
-#     '''
-#     cursor.execute(create_table_query)
-#     conn.commit()
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS shareHolders (
+            id SERIAL PRIMARY KEY,
+            shareholderName TEXT,
+            numShares INT,
+            percentShares FLOAT,
+            date DATE,
+            symbolId TEXT
+        )
+    '''
+    cursor.execute(create_table_query)
+    conn.commit()
     
-#     # Insert the data into the shareHolders table
-#     for index, row in combined_df.iterrows():
-#         insert_query = '''
-#             INSERT INTO shareHolders (shareholderName, numShares, percentShares, date, symbolId)
-#             VALUES (%s, %s, %s, %s, %s)
-#         '''
-#         values = (row['shareholderName'], row['numShares'], row['percentShares'], pd.to_datetime(row['date']).date(), symbol_id)
-#         cursor.execute(insert_query, values)
+    # Insert the data into the shareHolders table
+    for index, row in combined_df.iterrows():
+        insert_query = '''
+            INSERT INTO shareHolders (shareholderName, numShares, percentShares, date, symbolId)
+            VALUES (%s, %s, %s, %s, %s)
+        '''
+        values = (row['shareholderName'], row['numShares'], row['percentShares'], pd.to_datetime(row['date']).date(), symbol_id)
+        cursor.execute(insert_query, values)
     
-#     # Commit the changes for the current symbol ID
-#     conn.commit()
+    # Commit the changes for the current symbol ID
+    conn.commit()
 
-# # Close the cursor and the connection
-# cursor.close()
-# conn.close()
+# Close the cursor and the connection
+cursor.close()
+conn.close()
