@@ -1,50 +1,32 @@
+from crawler import Crawler
+from service import DatabaseManager
 import pandas as pd
-import requests
-import json
-import psycopg2
 
-class Scraper:
-    def __init__(self, base_url):
-        self.base_url = base_url
-        self.collected_data = []  # List to store the scraped data
+# assign the arguments
+base_url = 'http://cdn.tsetmc.com/api/Shareholder'
+start_date = '2023-09-01'
+end_date = '2023-09-20'
 
-    def get_url(self, symbol_id, date):
-        url = f"{self.base_url}/{symbol_id}/{date}"
-        return str(url)
-    
-    def get_request(self, url):
-        headers = {
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Encoding': 'gzip, deflate',
-            'Language': 'en-US,en;q=0.5',
-            'Content-Type': 'application/json; charset=utf-8'
-        }
-        response = requests.get(url=url, headers=headers)
-        return response.text
-    
-    def crawl_data(self, symbol_ids, start_date, end_date):
-            dates = pd.date_range(start=start_date, end=end_date).strftime("%Y%m%d")
-            
-            for symbol_id in symbol_ids:
-                print(f"Scraping data for Symbol ID: {symbol_id}")
-                
-                for date in dates:
-                    try:
-                        url = self.get_url(symbol_id=symbol_id, date=date)
-                        response = self.get_request(url)
-                        self.process_data(response, symbol_id)
-                        print(f"Data for {date} processed successfully")
-                    except Exception as e:
-                        print(f"Error occurred for {date}: {str(e)}")
+# Read the symbol IDs from the CSV file
+symbol_ids_df = pd.read_csv('./TSE Symbols.csv')
+symbol_ids = symbol_ids_df['id'].tolist()
 
-    def process_data(self, response, symbol_id):
-        # Process the response and extract the required data
-        res_json = json.loads(response)
-        df = pd.DataFrame(res_json['shareShareholder'])
-        df['symbol_id'] = symbol_id
-        print(df)
-        # Store the scraped data
-        self.collected_data.append(df)
+# creat a new instance of Scraper and pass the arguments
+scraper = Crawler(base_url= base_url)
+scraper.crawl_data(symbol_ids, start_date, end_date)
 
-    def get_collected_data(self):
-        return pd.concat(self.collected_data)
+# final data 
+scraped_data = scraper.get_collected_data()
+scraped_data.to_csv('./collected_data.csv')
+
+# data schema
+columns = ['cIsin VARCHAR(80)', 'change VARCHAR(80)', 'changeAmount VARCHAR(80)', 'dEven VARCHAR(80)', 'numberOfShares VARCHAR(80)',
+            'perOfShares VARCHAR(80)', 'shareHolderID VARCHAR(80)', 'shareHolderName VARCHAR(80)', 'shareHolderShareID VARCHAR(80)', 'symbol_id VARCHAR(80)']
+
+# setting up the database and inserting the data
+postgres = DatabaseManager('localhost', 'postgres', user='postgres', password='123456')
+postgres.connect()
+postgres.create_table('share_holders',', '.join(columns))
+postgres.insert_data('share_holders', scraped_data)
+postgres.commit()
+postgres.disconnect()
