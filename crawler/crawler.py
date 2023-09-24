@@ -3,8 +3,8 @@ from service import DatabaseManager
 import pandas as pd
 
 # assign the arguments
-url = 'http://cdn.tsetmc.com/api/Shareholder'
-start_date = '2022-09-20'
+base_url = 'http://cdn.tsetmc.com/api/Shareholder'
+start_date = '2023-09-01'
 end_date = '2023-09-20'
 
 # Read the symbol IDs from the CSV file
@@ -12,7 +12,7 @@ symbol_ids_df = pd.read_csv('./TSE Symbols.csv')
 symbol_ids = symbol_ids_df['id'].tolist()
 
 # creat a new instance of Scraper and pass the arguments
-scraper = Scraper(base_url= url)
+scraper = Scraper(base_url= base_url)
 scraper.crawl_data(symbol_ids, start_date, end_date)
 
 # final data 
