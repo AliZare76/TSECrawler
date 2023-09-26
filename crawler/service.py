@@ -55,3 +55,4 @@ class DatabaseManager:
     def execute_select_query(self, query, values=None):
         self.execute_query(query, values)
         return self.cursor.fetchall()
+
