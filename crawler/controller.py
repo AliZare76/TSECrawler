@@ -4,19 +4,15 @@ import pandas as pd
 from config import *
 
 class Interface:
-    def __init__(self):
+    def __init__(self, base_url, start_date, end_date):
         self.collected_data = []
         symbol_ids_df = pd.read_csv('TSE Symbols.csv')
         self.pattern = symbol_ids_df['id'].tolist()
-    
-    def assign(self, base_url, start_date, end_date):
+        self.columns = columns
         self.base_url = base_url
         self.start = start_date
         self.end = end_date
         print(f'controller set for crawling from {base_url} from {start_date} to {end_date}')
-    
-    def schema(self, columns):
-        self.columns = columns
     
     def crawl(self):
         crawler = Crawler(base_url= self.base_url)
