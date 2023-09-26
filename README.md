@@ -21,9 +21,9 @@ git pull https://github.com/AliZare76/TSECrawler.git
 
 ```
 pip install -r requirements.txt
-docker compose up
+python3 main.py
 ```
 or :
 ```
-python3 main.py
+docker compose up
 ```
