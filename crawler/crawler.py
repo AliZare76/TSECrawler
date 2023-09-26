@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 import json
-import psycopg2
+from config import *
 
 class Crawler:
     def __init__(self, base_url):
@@ -13,12 +13,6 @@ class Crawler:
         return str(url)
     
     def get_request(self, url):
-        headers = {
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Encoding': 'gzip, deflate',
-            'Language': 'en-US,en;q=0.5',
-            'Content-Type': 'application/json; charset=utf-8'
-        }
         response = requests.get(url=url, headers=headers)
         return response.text
     
