@@ -1,6 +1,6 @@
 # TSE Crawler
 
-ETL process to crawl, process and store the data from a specefic api.
+ETL pipeline to crawl, process and store the data from a specefic api.
 
 
 ## Getting Started
